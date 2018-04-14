@@ -1,2 +1,2 @@
 # JavaPracs
-Solution to java Practical Slips
+Solution to Java Practical Slips
