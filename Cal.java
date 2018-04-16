@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 import java.applet.Applet;
 public class Cal implements ActionListener
 {
@@ -8,7 +9,6 @@ public class Cal implements ActionListener
 	Button b[]=new Button[10];
 	Button b10,b11,b12,b13,b14,b15,b16;
 	int val1, val2, result;
-	char OPRAT;
 	String ins, input_value = "";	//inserted values in textfield
 	void addGrid(int x, int y, Insets inset, Button b)
 	{
@@ -73,35 +73,40 @@ public class Cal implements ActionListener
 			butt.addActionListener(this);  			
 		}	
 	}
-	public long calculate(String str)
+	public double calculate(String str)
 	{	
-		String num1="";
-		String num2="";
-		int i=0;
-		for(;i<str.length();i++)
-		{
-			if(str.charAt(i)==OPRAT)
+
+		ArrayList<String> nums = new ArrayList<String>();
+		ArrayList<String> ops = new ArrayList<String>();
+		String recentNum = "";
+		String calc = "";
+		for (char n : str.toCharArray()) {
+			switch(n)
 			{
-				break;
-			}		
-			num1+=""+str.charAt(i);
+				case '+': ops.add("+"); nums.add(recentNum); recentNum = ""; break;
+				case '-': ops.add("-"); nums.add(recentNum); recentNum = ""; break;
+				case '/': ops.add("/"); nums.add(recentNum); recentNum = ""; break;
+				case '*': ops.add("*"); nums.add(recentNum); recentNum = ""; break;
+				case '%': ops.add("%"); nums.add(recentNum); recentNum = ""; break;
+				default:recentNum+=n+"";
+			}
 		}
-		for(i+=1;i<str.length();i++)
+		nums.add(recentNum);
+		double value = Double.parseDouble(nums.get(0));
+		for(int i=1;i<nums.size(); i++)
 		{
-			num2+=""+str.charAt(i);
+			String operator = ops.get(i-1);
+			double current = Double.parseDouble(nums.get(i));
+			switch(operator)
+			{
+				case "+":  value = value + current; break;
+				case "-":  value = value - current; break;
+				case "/":  value = value / current; break;
+				case "*":  value = value * current; break;
+				case "%":  value = value % current; break;
+			}
 		}
-		System.out.println(OPRAT);
-		System.out.println("num1: "+num1);
-		System.out.println("num2: "+num2);
-		switch(OPRAT)
-		{
-			case '+': return Long.parseLong(num1)+Long.parseLong(num2);
-			case '-': return Long.parseLong(num1)-Long.parseLong(num2);
-			case '/': return Long.parseLong(num1)/Long.parseLong(num2);
-			case '*': return Long.parseLong(num1)*Long.parseLong(num2);
-			case '%': return Long.parseLong(num1)%Long.parseLong(num2);
-		}
-		return 0;
+		return value;
 	}
 	
 	public void actionPerformed(ActionEvent ae)
@@ -109,22 +114,12 @@ public class Cal implements ActionListener
 		String button_pressed = ae.getActionCommand();
 		switch(button_pressed)
 		{
-			case "+":	OPRAT='+';
-						break;
-			case "-" :	OPRAT='-';
-						break;
-			case "*" :	OPRAT='*';
-						break;
-			case "/" :	OPRAT='/';
-						break;
-			case "%" :	OPRAT='%';
-						break;
 			case "=" : 	input_value = calculate(input_value)+"";
 						input.setText(input_value);
 						return;
-			case "C" : 	OPRAT='C';
-						input.setText("");
+			case "C" : 	
 						input_value="";
+						input.setText(input_value);
 						return;
 		}		
 		input_value += ae.getActionCommand();
